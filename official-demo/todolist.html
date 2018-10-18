@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Hello React!</title>
+    <script src="https://cdn.staticfile.org/react/16.4.0/umd/react.development.js"></script>
+    <script src="https://cdn.staticfile.org/react-dom/16.4.0/umd/react-dom.development.js"></script>
+    <script src="https://cdn.staticfile.org/babel-standalone/6.26.0/babel.min.js"></script>
+    <link rel="stylesheet" href="./icomoon/style.css">
+    <style>
+        li{
+            list-style: none;
+        }
+        .todo-container{
+            display: inline-block;
+            position:absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            line-height:1;
+            padding: 10px 0;
+            box-shadow: 1px 1px 15px #f2f2f2;
+            text-align: center;
+        }
+        .title{
+            margin: 0;
+            font-size: 18px;
+            color: lightblue;
+        }
+        .input-container{
+            position: relative;
+            padding: 0 30px 20px;
+        }
+        .todo-input{
+            width: 400px;
+            padding: 10px;
+            margin: 20px 0 0;
+            border-radius: 4px;
+            border: 1px solid #d9d9d9;
+        }
+        .input-container>.icon-cross{
+            display: none;
+            position: absolute;
+            right: 40px;
+            bottom: 30px;
+        }
+        .input-container>.icon-cross.active{
+            display: inline-block;
+        }
+        .icon-cross:before {
+            content: "\ea0f";
+        }
+        .todo-list-container{
+            padding: 10px 30px;
+            text-align: left;
+            border-top: 1px dotted #d9d9d9;
+            font-size: 14px;
+        }
+        .todo-list-container .title{
+            font-weight: normal;
+            font-size: 14px;
+        }
+        .todo-list{
+            padding: 0;
+            margin: 0;
+        }
+        .list-item{
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px dotted #d9d9d9;
+            clear: both;
+        }
+        .list-item:last-child{
+            border: none;
+        }
+        .btn-container{
+            flex: 1;
+            display: flex;
+            justify-content: flex-end;
+        }
+        .btn{
+            background: none;
+            border: 1px solid lightblue;
+            border-radius: 4px;
+            color: lightblue;
+        }
+        .no-more{
+            margin: 20px 0;
+            text-align: center;
+            font-size: 14px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="box"></div>
+
+    <script type="text/babel">
+        class InputBox extends React.Component{
+            render(){
+                return (
+                    <div className="input-container">
+                        <input
+                            type="text"
+                            placeholder="请输入待办事项"
+                            value={this.props.val}
+                            onChange={this.props.handleChange}
+                            onKeyUp={this.props.handleEnter}
+                            className="todo-input"
+                        />
+                        <span className={this.props.val ==='' ? 'icon-cross' : 'icon-cross active'} onClick={this.props.handleClear}/>
+                    </div>
+                )
+            }
+        }
+
+        class ListItem extends React.Component{
+            render(){
+                let listType = this.props.listType,
+                    listArr = this.props.listArr;
+                if(!listArr.length){
+                    return(
+                        <div className="no-more">暂无数据</div>
+                    )
+                }
+                return (
+                    <ul className="todo-list">
+                        {
+                            listArr.map((val,index) => {
+                                if(listType === '1'){
+                                    return (
+                                        <li className="list-item" key={index}>
+                                            <span>{val}</span>
+                                            <div className="btn-container">
+                                                <button type="button" className="btn" data-index={index} onClick={this.props.handleFinish}>finished</button>
+                                            </div>
+                                        </li>
+                                    )
+                                }else {
+                                    return (
+                                        <li className="list-item" key={index}>
+                                            <span>{val}</span>
+                                            <div className="btn-container">
+                                                <button type="button" className="btn" data-index={index} onClick={this.props.handleDelete}>
+                                                    <span className="icon-cross" />
+                                                </button>
+                                            </div>
+                                        </li>
+                                    )
+                                }
+                            })
+                        }
+                    </ul>
+                )
+            }
+        }
+
+        class List extends React.Component{
+            render(){
+                return(
+                    <div className="todo-list-container">
+                        <h1 className="title">{this.props.listType === '1' ? '待办事项' : '已完成'}</h1>
+                        <ListItem {...this.props}/>
+                    </div>
+                )
+            }
+        }
+
+
+        class Container extends React.Component{
+            constructor(){
+                super()
+                this.state = {
+                    todoList:[],
+                    finishedList:[],
+                    val:''
+                };
+                this.listenChange = this.listenChange.bind(this);
+                this.listenEnter = this.listenEnter.bind(this);
+                this.listenFinish = this.listenFinish.bind(this);
+                this.listenDelete = this.listenDelete.bind(this);
+                this.listenClear = this.listenClear.bind(this);
+            }
+
+            static filterData(arr){
+                let newArr = [];
+                newArr = newArr.concat(arr);
+                return newArr;
+            }
+
+            listenChange(e){
+                this.setState({
+                    val:e.target.value
+                })
+            }
+
+            listenEnter(e){
+                let downCode = e.keyCode;
+                if(downCode === 13){
+                    let inputContent = this.state.val.trim();
+                    if(!inputContent) {
+                        alert('请输入待办事项');
+                        return;
+                    }
+                    let newArr = Container.filterData(this.state.todoList),
+                        len = newArr.length;
+                    newArr[len] = inputContent;
+                    this.setState({
+                        todoList:newArr,
+                        val:''
+                    })
+                }
+            }
+
+            listenFinish(e){
+                let clickIndex = e.target.dataset.index,
+                    newArr = Container.filterData(this.state.finishedList),
+                    newArr2 = Container.filterData(this.state.todoList),
+                    len = newArr.length;
+                newArr[len] = newArr2[clickIndex];
+                newArr2.splice(clickIndex,1);
+
+                this.setState({
+                    finishedList:newArr,
+                    todoList:newArr2
+                })
+            }
+
+            listenDelete(e){
+                let clickIndex = e.target.dataset.index;
+                let newArr = Container.filterData(this.state.finishedList);
+                newArr.splice(clickIndex,1);
+                this.setState({
+                    finishedList:newArr
+                })
+            }
+
+            listenClear(){
+                this.setState({
+                    val:''
+                })
+            }
+
+            render(){
+                return (
+                    <div className="todo-container">
+                        <h1 className="title">todoList</h1>
+                        <InputBox
+                            handleChange={this.listenChange}
+                            val={this.state.val}
+                            handleEnter={this.listenEnter}
+                            handleClear={this.listenClear}
+                        />
+                        <List listType="1" listArr={this.state.todoList} handleFinish={this.listenFinish}/>
+                        <List listType="2" listArr={this.state.finishedList} handleDelete={this.listenDelete}/>
+                    </div>
+                )
+            }
+        }
+
+
+        ReactDOM.render(
+            <Container />,
+            document.getElementById('box')
+        )
+    </script>
+</body>
+</html>

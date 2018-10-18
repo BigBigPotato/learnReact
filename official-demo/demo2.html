@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Hello React!</title>
+    <script src="https://cdn.staticfile.org/react/16.4.0/umd/react.development.js"></script>
+    <script src="https://cdn.staticfile.org/react-dom/16.4.0/umd/react-dom.development.js"></script>
+    <script src="https://cdn.staticfile.org/babel-standalone/6.26.0/babel.min.js"></script>
+</head>
+<body>
+
+    <div id="box"></div>
+    <div id="box2"></div>
+    <div id="box3"></div>
+
+    <script type="text/babel">
+        //定义组件
+        //组件名称必须以大写字母开头。组件的返回值只能有一个根元素
+        //当React遇到的元素是用户自定义的组件，它会将JSX属性作为单个对象传递给该组件，这个对象称之为“props”。
+        //组件决不能修改它自己的props
+        //1、函数定义
+        function Hello(props) {
+            return (
+                <h1>hello,{props.name}</h1>
+            )
+        }
+        ReactDOM.render(
+            <Hello name="React"/>,
+            document.getElementById('box')
+        )
+
+        //2、类定义
+        class Hello2 extends React.Component{
+            render () {
+                return (
+                    <h1>hello,{this.props.name}</h1>
+                )
+            }
+        }
+        ReactDOM.render(
+            <Hello2 name="class"></Hello2>,
+            document.getElementById('box2')
+        )
+
+        //props.children
+        class Child extends React.Component{
+            render(){
+                return (
+                    <div>{this.props.children}</div>
+                )
+            }
+        }
+
+        ReactDOM.render(
+            <Child>
+                <h1>hello,props.children</h1>
+            </Child>,
+            document.getElementById('box3')
+        )
+    </script>
+</body>
+</html>

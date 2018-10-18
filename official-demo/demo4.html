@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Hello React!</title>
+    <script src="https://cdn.staticfile.org/react/16.4.0/umd/react.development.js"></script>
+    <script src="https://cdn.staticfile.org/react-dom/16.4.0/umd/react-dom.development.js"></script>
+    <script src="https://cdn.staticfile.org/babel-standalone/6.26.0/babel.min.js"></script>
+</head>
+<body>
+
+    <div id="box"></div>
+    <div id="box2"></div>
+
+    <script type="text/babel">
+        function fn(e) {
+            console.log('hello,world')
+        }
+        let element = (
+            <h1 onClick={fn}>console</h1>
+        )
+
+        ReactDOM.render(
+            element,
+            document.getElementById('box')
+        )
+
+        //组件中定义事件
+        class Some extends React.Component{
+            constructor(){
+                super()
+                this.state = {
+                    flag:true
+                }
+                //this.handleClick = this.handleClick.bind(this)
+            }
+
+            //类的方法默认是不会绑定 this
+            //通过 bind 方式向监听函数传参，在类组件中定义的监听函数，事件对象 e 要排在所传递参数的后面
+            handleClick (name,e) {
+                this.setState((prevState) => {
+                    return{
+                        flag:!prevState.flag
+                    }
+                })
+                console.log(name)
+            }
+
+            render(){
+                //不渲染组件：render 方法返回 null
+                //组件的 render 方法返回 null 并不会影响该组件生命周期方法的回调
+                return (
+                    //通过箭头函数的方式，事件对象必须显式的进行传递
+                    <button type="button" onClick={this.handleClick.bind(this,'react')}>{this.state.flag ? 'On' : 'Off'}</button>
+                )
+            }
+        }
+        ReactDOM.render(
+            <Some/>,
+            document.getElementById('box2')
+        )
+    </script>
+</body>
+</html>

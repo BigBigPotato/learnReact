@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://cdn.staticfile.org/react/16.4.0/umd/react.development.js"></script>
+    <script src="https://cdn.staticfile.org/react-dom/16.4.0/umd/react-dom.development.js"></script>
+    <script src="https://cdn.staticfile.org/babel-standalone/6.26.0/babel.min.js"></script>
+</head>
+<body>
+    <div class="container"></div>
+
+    <script type="text/babel">
+        class Square extends React.Component{
+            render(){
+                let squareStyle = {
+                    height:250,
+                    background:this.props.color
+                }
+                return (
+                    <div style={squareStyle}></div>
+                )
+            }
+        }
+        class Lable extends React.Component{
+            render(){
+                let lableStyle = {
+                    height:50,
+                    lineHeight:'50px',
+                    padding:'0 10px',
+                    fontSize:20,
+                    fontWeight:'bold'
+                }
+                return (
+                    <div style={lableStyle}>
+                        {this.props.color.toLocaleUpperCase()}
+                        {/*<span>haha</span>*/}
+                    </div>
+                )
+            }
+        }
+        class Card extends React.Component{
+            render(){
+                let cardStyle = {
+                    width:200,
+                    height:300,
+                    boxShadow:'0px 0px 15px #666'
+                };
+                return (
+                    <div style={cardStyle}>
+                        <Square {...this.props}/>
+                        <Lable {...this.props}/>
+                    </div>
+                )
+            }
+        }
+
+        ReactDOM.render(
+            <Card color="#ff6009"/>,
+            document.querySelector('.container')
+        )
+    </script>
+</body>
+</html>

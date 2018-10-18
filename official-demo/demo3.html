@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Hello React!</title>
+    <script src="https://cdn.staticfile.org/react/16.4.0/umd/react.development.js"></script>
+    <script src="https://cdn.staticfile.org/react-dom/16.4.0/umd/react-dom.development.js"></script>
+    <script src="https://cdn.staticfile.org/babel-standalone/6.26.0/babel.min.js"></script>
+</head>
+<body>
+
+    <div id="box"></div>
+
+    <script type="text/babel">
+        function Hello(props) {
+            return (
+                <h1>hello,{props.name}</h1>
+            )
+        }
+        class Timer extends React.Component{
+            constructor(props){
+                super(props)
+                this.state = {
+                    date:new Date().toLocaleTimeString()
+                }
+            }
+
+            componentDidMount () {
+                //修改state
+                //1、
+                // this.setState((prevState,props) => {
+                //
+                // })
+                this.counter = setInterval(() => {
+                    //2、
+                    this.setState({
+                        date:new Date().toLocaleTimeString()
+                    })
+                },1000)
+            }
+
+            componentWillUnmount () {
+                clearInterval(this.counter)
+            }
+
+            render () {
+                return (
+                    <div>
+                        <Hello name={this.props.name}/>
+                        <h1>It is {this.state.date}</h1>
+                    </div>
+                )
+            }
+        }
+
+        ReactDOM.render(
+            <Timer name="Joe"/>,
+            document.getElementById('box')
+        )
+    </script>
+</body>
+</html>
