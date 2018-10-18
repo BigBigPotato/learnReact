@@ -8,9 +8,6 @@
     <script src="https://cdn.staticfile.org/babel-standalone/6.26.0/babel.min.js"></script>
     <link rel="stylesheet" href="./icomoon/style.css">
     <style>
-        li{
-            list-style: none;
-        }
         .todo-container{
             display: inline-block;
             position:absolute;
@@ -203,9 +200,8 @@
                         alert('请输入待办事项');
                         return;
                     }
-                    let newArr = Container.filterData(this.state.todoList),
-                        len = newArr.length;
-                    newArr[len] = inputContent;
+                    let newArr = this.state.todoList;
+                    newArr.push(inputContent) ;
                     this.setState({
                         todoList:newArr,
                         val:''
@@ -215,10 +211,9 @@
 
             listenFinish(e){
                 let clickIndex = e.target.dataset.index,
-                    newArr = Container.filterData(this.state.finishedList),
-                    newArr2 = Container.filterData(this.state.todoList),
-                    len = newArr.length;
-                newArr[len] = newArr2[clickIndex];
+                    newArr = this.state.finishedList,
+                    newArr2 = this.state.todoList;
+                newArr.push(newArr2[clickIndex]);
                 newArr2.splice(clickIndex,1);
 
                 this.setState({
@@ -229,7 +224,7 @@
 
             listenDelete(e){
                 let clickIndex = e.target.dataset.index;
-                let newArr = Container.filterData(this.state.finishedList);
+                let newArr = this.state.finishedList;
                 newArr.splice(clickIndex,1);
                 this.setState({
                     finishedList:newArr
