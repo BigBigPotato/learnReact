@@ -95,24 +95,69 @@
 
     <script type="text/babel">
         class InputBox extends React.Component{
+            constructor(){
+                super()
+                this.state = {
+                    val:''
+                }
+            }
+
+            handleChange(e){
+                this.setState({
+                    val:e.target.value
+                })
+            }
+
+            handleEnter(e){
+                let downCode = e.keyCode;
+                if(downCode === 13){
+                    let inputContent = this.state.val.trim();
+                    if(!inputContent) {
+                        alert('请输入待办事项');
+                        return;
+                    }
+                    this.props.handleEnter(inputContent)
+                    this.handleClear()
+                }
+            }
+
+            handleClear(){
+                this.setState({
+                    val:''
+                })
+            }
+
             render(){
                 return (
                     <div className="input-container">
                         <input
                             type="text"
                             placeholder="请输入待办事项"
-                            value={this.props.val}
-                            onChange={this.props.handleChange}
-                            onKeyUp={this.props.handleEnter}
+                            value={this.state.val}
+                            onChange={this.handleChange.bind(this)}
+                            onKeyUp={this.handleEnter.bind(this)}
                             className="todo-input"
                         />
-                        <span className={this.props.val ==='' ? 'icon-cross' : 'icon-cross active'} onClick={this.props.handleClear}/>
+                        <span
+                            className={this.state.val ==='' ? 'icon-cross' : 'icon-cross active'}
+                            onClick={this.handleClear.bind(this)}
+                        />
                     </div>
                 )
             }
         }
 
         class ListItem extends React.Component{
+            handleFinish(e){
+                let clickIndex = e.target.dataset.index;
+                this.props.handleFinish(clickIndex)
+            }
+
+            handleDelete(e){
+                let clickIndex = e.target.dataset.index;
+                this.props.handleDelete(clickIndex)
+            }
+
             render(){
                 let listType = this.props.listType,
                     listArr = this.props.listArr;
@@ -130,7 +175,12 @@
                                         <li className="list-item" key={index}>
                                             <span>{val}</span>
                                             <div className="btn-container">
-                                                <button type="button" className="btn" data-index={index} onClick={this.props.handleFinish}>finished</button>
+                                                <button
+                                                    type="button"
+                                                    className="btn"
+                                                    data-index={index}
+                                                    onClick={this.handleFinish.bind(this)}
+                                                >finished</button>
                                             </div>
                                         </li>
                                     )
@@ -139,7 +189,12 @@
                                         <li className="list-item" key={index}>
                                             <span>{val}</span>
                                             <div className="btn-container">
-                                                <button type="button" className="btn" data-index={index} onClick={this.props.handleDelete}>
+                                                <button
+                                                    type="button"
+                                                    className="btn"
+                                                    data-index={index}
+                                                    onClick={this.handleDelete.bind(this)}
+                                                >
                                                     <span className="icon-cross" />
                                                 </button>
                                             </div>
@@ -171,47 +226,22 @@
                 this.state = {
                     todoList:[],
                     finishedList:[],
-                    val:''
                 };
-                this.listenChange = this.listenChange.bind(this);
                 this.listenEnter = this.listenEnter.bind(this);
                 this.listenFinish = this.listenFinish.bind(this);
                 this.listenDelete = this.listenDelete.bind(this);
-                this.listenClear = this.listenClear.bind(this);
             }
 
-            static filterData(arr){
-                let newArr = [];
-                newArr = newArr.concat(arr);
-                return newArr;
-            }
-
-            listenChange(e){
+            listenEnter(inputContent){
+                let newArr = this.state.todoList;
+                newArr.push(inputContent) ;
                 this.setState({
-                    val:e.target.value
+                    todoList:newArr
                 })
             }
 
-            listenEnter(e){
-                let downCode = e.keyCode;
-                if(downCode === 13){
-                    let inputContent = this.state.val.trim();
-                    if(!inputContent) {
-                        alert('请输入待办事项');
-                        return;
-                    }
-                    let newArr = this.state.todoList;
-                    newArr.push(inputContent) ;
-                    this.setState({
-                        todoList:newArr,
-                        val:''
-                    })
-                }
-            }
-
-            listenFinish(e){
-                let clickIndex = e.target.dataset.index,
-                    newArr = this.state.finishedList,
+            listenFinish(clickIndex){
+                let newArr = this.state.finishedList,
                     newArr2 = this.state.todoList;
                 newArr.push(newArr2[clickIndex]);
                 newArr2.splice(clickIndex,1);
@@ -222,8 +252,7 @@
                 })
             }
 
-            listenDelete(e){
-                let clickIndex = e.target.dataset.index;
+            listenDelete(clickIndex){
                 let newArr = this.state.finishedList;
                 newArr.splice(clickIndex,1);
                 this.setState({
@@ -231,22 +260,11 @@
                 })
             }
 
-            listenClear(){
-                this.setState({
-                    val:''
-                })
-            }
-
             render(){
                 return (
                     <div className="todo-container">
                         <h1 className="title">todoList</h1>
-                        <InputBox
-                            handleChange={this.listenChange}
-                            val={this.state.val}
-                            handleEnter={this.listenEnter}
-                            handleClear={this.listenClear}
-                        />
+                        <InputBox handleEnter={this.listenEnter} />
                         <List listType="1" listArr={this.state.todoList} handleFinish={this.listenFinish}/>
                         <List listType="2" listArr={this.state.finishedList} handleDelete={this.listenDelete}/>
                     </div>

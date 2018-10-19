@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8"/>
+    <title>Hello React!</title>
+    <script src="https://cdn.staticfile.org/react/16.4.0/umd/react.development.js"></script>
+    <script src="https://cdn.staticfile.org/react-dom/16.4.0/umd/react-dom.development.js"></script>
+    <script src="https://cdn.staticfile.org/babel-standalone/6.26.0/babel.min.js"></script>
+    <style>
+        body {
+            background: #f2f2f2;
+            font-family: '微软雅黑'
+        }
+
+        .container {
+            width: 600px;
+            margin: 30px auto;
+        }
+        .input-container,
+        .comment-list{
+            border: 1px solid #e5e5e5;
+            background: #fff;
+        }
+        .input-container {
+            padding: 1px 30px 30px;
+        }
+
+        .input-floor {
+            display: flex;
+            margin: 20px 0 0;
+        }
+        .input-floor label{
+            width: 80px;
+        }
+        .input-box{
+            flex: 1;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .input-item {
+            flex: 1;
+            padding: 4px;
+            outline: none;
+            border: 1px solid #e5e5e5;
+            border-radius: 2px;
+            font-size: 14px;
+        }
+        #username{
+            padding: 8px 4px;
+        }
+        #content{
+            height: 150px;
+        }
+        .up-btn{
+            justify-content: flex-end;
+        }
+        .up-btn button{
+            padding: 8px 30px;
+            border-radius: 4px;
+            background: dodgerblue;
+            color: #ffffff;
+            border: none;
+            outline:none;
+        }
+        .comment-list{
+            padding: 30px;
+            background: #ffffff;
+        }
+        .list-item{
+            padding: 14px 0;
+            list-style: none;
+            border-bottom: 1px solid #e5e5e5;
+        }
+        .user{
+            margin: 0 10px 0 0;
+            color: dodgerblue;
+            font-size: 16px;
+            font-style:italic;
+        }
+        .user:after{
+            display: inline-block;
+            content: ':';
+        }
+    </style>
+</head>
+<body>
+<div id="box"></div>
+
+<script type="text/babel">
+    class CommentInput extends React.Component {
+        constructor(){
+            super()
+            this.state = {
+                userName:'',
+                upContent:''
+            }
+        }
+        nameChange(e){
+            this.setState({
+                userName:e.target.value
+            })
+        }
+        contentChange(e){
+            this.setState({
+                upContent:e.target.value
+            })
+        }
+        handleSubmit(){
+            let {userName,upContent} = this.state;
+            if(!(userName) || !(upContent)) {
+                alert('评论信息请填写完整')
+                return
+            }
+            this.props.listenSubmit(userName,upContent)
+            this.setState({
+                upContent:''
+            })
+        }
+        render() {
+            let states = this.state;
+            return (
+                <div className="input-container">
+                    <div className="input-floor">
+                        <label htmlFor="username">用户名：</label>
+                        <div className="input-box">
+                            <input
+                                type="text"
+                                value={states.userName}
+                                id="username"
+                                className="input-item"
+                                onChange={this.nameChange.bind(this)}
+                            />
+                        </div>
+                    </div>
+                    <div className="input-floor">
+                        <label htmlFor="content">评论内容：</label>
+                        <div className="input-box">
+                            <textarea
+                                value={states.upContent}
+                                id="content"
+                                className="input-item"
+                                onChange={this.contentChange.bind(this)}
+                            />
+                        </div>
+                    </div>
+                    <div className="input-floor up-btn">
+                        <button type="button" onClick={this.handleSubmit.bind(this)}>发布</button>
+                    </div>
+                </div>
+            )
+        }
+    }
+
+    class Comments extends React.Component {
+        render() {
+            let listArr = this.props.lists;
+            return (
+                <ul className="comment-list">
+                    {
+                        listArr.map(function (val,index) {
+                            return (
+                                <li className="list-item" key={index}>
+                                    <span className="user">{val.name} </span>
+                                    <span>{val.content}</span>
+                                </li>
+                            )
+                        })
+                    }
+                </ul>
+            )
+        }
+    }
+
+    class Container extends React.Component {
+        constructor(){
+            super()
+            this.state = {
+                commentList:[],
+            }
+        }
+
+        listenSubmit(name,content){
+            let commentList = this.state.commentList;
+            commentList.push({
+                name:name,
+                content:content
+            })
+            this.setState({
+                commentList:commentList
+            })
+        }
+
+        render() {
+            return (
+                <div className="container">
+                    <CommentInput name={this.state.userName} content={this.state.upContent} listenSubmit={this.listenSubmit.bind(this)}/>
+                    <Comments lists={this.state.commentList}/>
+                </div>
+            )
+        }
+    }
+
+    ReactDOM.render(
+        <Container/>,
+        document.getElementById('box')
+    )
+</script>
+</body>
+</html>
